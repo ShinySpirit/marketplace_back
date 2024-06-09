@@ -1,19 +1,16 @@
 import { Controller, Get } from '@nestjs/common';
+import { HealthcheckService } from './healthcheck.service';
 
-type healthcheckObj = {
-    status: number,
-    server: string, 
-    database: string,
-}
+
 
 @Controller('healthcheck')
-export class HealthcheckController {
+export class HealthcheckController {   
+    constructor(
+        private healthckeckService: HealthcheckService
+    ) {}
     @Get()
-    healthcheck(): healthcheckObj {
-        return {
-            status: 200,
-            server: "Running",
-            database: "Not connected"
-        }
+    healthcheck() {
+        return this.healthckeckService.healthcheck()
     }
 }
+

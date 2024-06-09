@@ -1,16 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { HealthcheckController } from './healthcheck/healthcheck.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { HealthcheckModule } from './healthcheck/healthcheck.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      synchronize: true,
     }),
+    HealthcheckModule,
   ],
-  controllers: [AppController, HealthcheckController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
