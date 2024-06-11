@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class pingEntity {   
+@Entity('ping_entities')
+export class PingEntity {   
     @PrimaryGeneratedColumn()
     id: number
 }

@@ -1,5 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { HealthcheckService } from './healthcheck.service';
+import { IResponse } from 'src/types/IResponse';
+import { IHealthcheck } from 'src/types/IHealthcheck';
 
 
 
@@ -9,7 +11,7 @@ export class HealthcheckController {
         private healthckeckService: HealthcheckService
     ) {}
     @Get()
-    healthcheck() {
+    async healthcheck(): Promise<IResponse<IHealthcheck>> {
         return this.healthckeckService.healthcheck()
     }
 }
