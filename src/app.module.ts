@@ -4,7 +4,11 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HealthcheckModule } from './healthcheck/healthcheck.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PingEntity } from './healthcheck/entities/healthcheck.entity';
+import { PingEntity } from './entities/healthcheck.entity';
+import { CategoriesModule } from './categories/categories.module';
+import { CategoryEntity } from './entities/category.entity';
+import { ProductsModule } from './products/products.module';
+import { ProductEntity } from './entities/product.entity';
 
 @Module({
   imports: [
@@ -18,10 +22,13 @@ import { PingEntity } from './healthcheck/entities/healthcheck.entity';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [PingEntity]
+        entities: [PingEntity, CategoryEntity, ProductEntity],
+        synchronize: true,
       }),
     }),
     HealthcheckModule,
+    CategoriesModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

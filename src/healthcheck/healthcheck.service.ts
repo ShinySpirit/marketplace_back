@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PingEntity } from './entities/healthcheck.entity';
+import { PingEntity } from '../entities/healthcheck.entity';
 import { Repository } from 'typeorm';
 import { IResponse } from 'src/types/IResponse';
 import { IHealthcheck } from 'src/types/IHealthcheck';
