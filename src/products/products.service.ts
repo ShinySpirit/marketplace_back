@@ -1,10 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, ParseFilePipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from 'src/entities/product.entity';
 import { IProduct } from 'src/types/IProduct';
 import { IResponse } from 'src/types/IResponse';
 import { Repository } from 'typeorm';
-import { HttpStatus, HttpException } from '@nestjs/common';
+import { HttpStatus, HttpException, PipeTransform } from '@nestjs/common';
+
+@Injectable()
+export class ParseFilesPipe implements PipeTransform<Express.Multer.File[]> {
+    constructor(private readonly pipe: ParseFilePipe) {}
+
+    async transform(
+        files: Express.Multer.File[] | { [key: string]: Express.Multer.File[] },
+    ) {
+        for (const file of Object.values(files).flat())
+            await this.pipe.transform(file);
+
+        return files;
+    }
+}
+
 
 @Injectable()
 export class ProductsService {

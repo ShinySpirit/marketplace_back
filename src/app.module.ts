@@ -9,11 +9,20 @@ import { CategoriesModule } from './categories/categories.module';
 import { CategoryEntity } from './entities/category.entity';
 import { ProductsModule } from './products/products.module';
 import { ProductEntity } from './entities/product.entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [
+        ConfigModule,
+        ServeStaticModule.forRoot({
+          rootPath: join(process.cwd(), './static'),
+        }),
+      ],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
