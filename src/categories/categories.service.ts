@@ -15,30 +15,62 @@ export class CategoriesService {
     ) {}
 
     async getCategories(): Promise<IResponse<ICategory[]>> {
-        try {
+        try{
             let data = await this.categoryRepository.find()
             return {
-                status_code: HttpStatus.OK,
-                detail: "OK",
+                statusCode: HttpStatus.OK,
+                message: "OK",
                 result: data
             }
         } catch(e) {
-            Logger.error(e);
-            throw new HttpException("Error while fetching categories: " + e, HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new Error(e);
         }
+        
     }
 
     async createCategory(category: ICategory): Promise<IResponse<string>> {
-        try {
+        try {         
             this.categoryRepository.save(category);
             return {
-                status_code: HttpStatus.OK,
-                detail: "OK",
+                statusCode: HttpStatus.OK,
+                message: "OK",
                 result: "Category created"
             }
         } catch(e) {
-            Logger.error(e);
-            throw new HttpException("Error while creating category: " + e, HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new Error(e);
         }
+    }
+
+    async updateCategory(category: ICategory): Promise<IResponse<ICategory>> {
+        try {
+            const oldItem = await this.categoryRepository.findOne({
+                where: { 
+                    id: category.id  
+                }
+            });
+
+            if(!oldItem){
+                throw new Error("Category not found")
+            }
+
+            await this.categoryRepository.update({
+                id: category.id
+            }, category)
+
+            const newItem = await this.categoryRepository.findOne({
+                where: {
+                    ...category
+                }
+            })
+
+            return {
+                statusCode: HttpStatus.OK,
+                message: "OK",
+                result: newItem
+            }
+        } catch(e) {
+            throw new Error(e);
+        }
+        
     }
 }

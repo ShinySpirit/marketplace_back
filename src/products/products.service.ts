@@ -36,8 +36,8 @@ export class ProductsService {
                 }
             });
             return {
-                status_code: HttpStatus.OK,
-                detail: "OK",
+                statusCode: HttpStatus.OK,
+                message: "OK",
                 result: data
             }
         } catch(e) {
@@ -50,8 +50,8 @@ export class ProductsService {
         try {
             this.productRepository.save(product);
             return {
-                status_code: HttpStatus.OK,
-                detail: "OK",
+                statusCode: HttpStatus.OK,
+                message: "OK",
                 result: "Product inserted"
             }
         }catch(e) {

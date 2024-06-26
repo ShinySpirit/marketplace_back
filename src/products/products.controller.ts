@@ -28,7 +28,7 @@ export class ProductsController {
       destination: join(process.cwd(), './static'),
       filename(req, file, callback) {
         var rightNow = new Date();
-        var res = rightNow.toISOString().slice(0,10).replace(/-/g,"");
+        var res = rightNow.toISOString().slice(0,19).replace(/-|:/g,"");
         callback(null, `${res}-${file.originalname}`)
       },
     })

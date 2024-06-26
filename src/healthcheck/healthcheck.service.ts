@@ -18,8 +18,8 @@ export class HealthcheckService {
         try {
             time = (await this.pingRepository.query("SELECT NOW()"))[0].now 
             return {
-                status_code: HttpStatus.OK,
-                detail: "OK",
+                statusCode: HttpStatus.OK,
+                message: "OK",
                 result: {
                     database: "Running, queried time: "  + time,
                     server: "Running"

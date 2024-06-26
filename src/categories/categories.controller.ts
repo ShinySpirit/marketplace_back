@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, HttpException, HttpStatus, Logger, UseFilters } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { IResponse } from 'src/types/IResponse';
 import { ICategory } from 'src/types/ICategory';
@@ -6,6 +6,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
+import { HttpErrorFilter } from 'src/http-exception.filter';
 
 @Controller('categories')
 export class CategoriesController {
@@ -13,12 +14,16 @@ export class CategoriesController {
 
   // Get all categories
   @Get()
+  // Exception filter
+  @UseFilters(new HttpErrorFilter())
   async getCategories(): Promise<IResponse<ICategory[]>> {
     return this.categoriesService.getCategories();
   }
 
   // Add one product Post route
   @Post()
+  // Exception filter
+  @UseFilters(new HttpErrorFilter())
   // Interceptor for image
   @UseInterceptors(FileInterceptor('image', {
     // Describe the file storage and way to name saved image
@@ -26,7 +31,7 @@ export class CategoriesController {
       destination: join(process.cwd(), './static'),
       filename(req, file, callback) {
         var rightNow = new Date();
-        var res = rightNow.toISOString().slice(0,10).replace(/-/g,"");
+        var res = rightNow.toISOString().slice(0,19).replace(/-|:/g,"");
         callback(null, `${res}-${file.originalname}`)
       },
     })
@@ -46,9 +51,54 @@ export class CategoriesController {
     )
     image: Express.Multer.File
   ): Promise<IResponse<string>> {
+    if(!category.title) {
+      throw new HttpException("Error while creating category: Title must be specified", HttpStatus.BAD_REQUEST)
+    }
     // Writing image name into category model object
     category.image = image.filename
     // Writing category model object to database
     return this.categoriesService.createCategory(category);
+  }
+
+  @Patch()
+  @UseFilters(new HttpErrorFilter())
+  // Interceptor for image
+  @UseInterceptors(FileInterceptor('image', {
+    // Describe the file storage and way to name saved image
+    storage: diskStorage({
+      destination: join(process.cwd(), './static'),
+      filename(req, file, callback) {
+        var rightNow = new Date();
+        var res = rightNow.toISOString().slice(0,19).replace(/-|:/g,"");
+        callback(null, `${res}-${file.originalname}`)
+      },
+    })
+  }))
+  async updateCategory(
+    // Recieving body with fields except image
+    @Body() 
+    category: ICategory,
+    @UploadedFile(
+      // Validator for image
+      new ParseFilePipe({
+        fileIsRequired: false,
+        validators: [
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+      }),
+    )
+    image: Express.Multer.File
+  ): Promise<IResponse<ICategory>> {
+    if(!category.id){
+      throw new HttpException("id must be specified", HttpStatus.BAD_REQUEST)
+    }
+    if(image) {
+      category.image = image.filename;
+    }   
+
+    // Writing category model object to database
+
+    return this.categoriesService.updateCategory(category);
+
   }
 }
