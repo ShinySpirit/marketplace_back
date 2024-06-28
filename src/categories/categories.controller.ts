@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, HttpException, HttpStatus, Logger, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, HttpException, HttpStatus, Logger, UseFilters, Delete, Param } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { IResponse } from 'src/types/IResponse';
 import { ICategory } from 'src/types/ICategory';
@@ -60,7 +60,7 @@ export class CategoriesController {
     return this.categoriesService.createCategory(category);
   }
 
-  @Patch()
+  @Patch('/:id')
   @UseFilters(new HttpErrorFilter())
   // Interceptor for image
   @UseInterceptors(FileInterceptor('image', {
@@ -76,7 +76,8 @@ export class CategoriesController {
   }))
   async updateCategory(
     // Recieving body with fields except image
-    @Body() 
+    @Param('id') id: number,
+    @Body()     
     category: ICategory,
     @UploadedFile(
       // Validator for image
@@ -89,16 +90,23 @@ export class CategoriesController {
     )
     image: Express.Multer.File
   ): Promise<IResponse<ICategory>> {
-    if(!category.id){
-      throw new HttpException("id must be specified", HttpStatus.BAD_REQUEST)
-    }
+    category.id = id;
     if(image) {
       category.image = image.filename;
     }   
-
     // Writing category model object to database
 
     return this.categoriesService.updateCategory(category);
 
   }
+
+  @Delete('/:id')
+  @UseFilters(new HttpErrorFilter())
+  async deleteCategoryById(@Param('id') id:number): Promise<IResponse<string>> {
+    if(!id) {
+      throw new HttpException("Category id must be specified for deleting", HttpStatus.BAD_REQUEST)
+    }
+    return this.categoriesService.deleteCategoryById(id);
+  }
+
 }

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IResponse } from 'src/types/IResponse';
 import { ICategory } from 'src/types/ICategory';
-import { HttpException, HttpStatus, } from '@nestjs/common';
+import { HttpStatus, } from '@nestjs/common';
 
 
 @Injectable()
@@ -59,7 +59,7 @@ export class CategoriesService {
 
             const newItem = await this.categoryRepository.findOne({
                 where: {
-                    ...category
+                    id: category.id
                 }
             })
 
@@ -72,5 +72,27 @@ export class CategoriesService {
             throw new Error(e);
         }
         
+    }
+
+    async deleteCategoryById(id: number): Promise<IResponse<string>> {
+        try{
+            let result = await this.categoryRepository.delete({
+                id: id
+            })
+            if(result.affected === 0) {
+                return {
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: "Not found",
+                    result: 'Category not found'
+                }
+            }
+            return {
+                statusCode: HttpStatus.OK,
+                message: "OK",
+                result: 'Category deleted'
+            }
+        } catch(e) {
+            throw new Error(e);
+        }
     }
 }
