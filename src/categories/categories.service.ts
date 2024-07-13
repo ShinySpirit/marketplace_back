@@ -30,7 +30,7 @@ export class CategoriesService {
 
     async createCategory(category: ICategory): Promise<IResponse<string>> {
         try {         
-            this.categoryRepository.save(category);
+            await this.categoryRepository.save(category);
             return {
                 statusCode: HttpStatus.OK,
                 message: "OK",

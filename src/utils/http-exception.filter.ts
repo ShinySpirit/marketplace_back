@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger, NotFoundException } from '@nestjs/common';
 
 @Catch()
 export class HttpErrorFilter implements ExceptionFilter {
@@ -7,14 +7,24 @@ export class HttpErrorFilter implements ExceptionFilter {
   constructor(){
     this.logger = new Logger 
   }
+  
   catch(exception: Error, host: ArgumentsHost): any {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
 
-    const statusCode = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
-    const message = exception instanceof HttpException ?  HttpStatus[statusCode].charAt(0) + HttpStatus[statusCode].split('_').join(' ').substring(1).toLowerCase() : 'Internal server error'
-    const error = exception.message
+    let statusCode = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
+    let message = exception instanceof HttpException ?  HttpStatus[statusCode].charAt(0) + HttpStatus[statusCode].split('_').join(' ').substring(1).toLowerCase() : 'Internal server error'
+    let error = exception.message
+
+    if(exception.message === "User not found" ) {
+      statusCode = HttpStatus.NOT_FOUND;
+      message = "Not found"
+    }
+    if(exception.message === "Wrong password" ) {
+      statusCode = HttpStatus.UNAUTHORIZED;
+      message = "Unauthorized"
+    }
 
     const log: any = {
       statusCode,

@@ -5,7 +5,7 @@ import { IProduct } from 'src/types/IProduct';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
-import { HttpErrorFilter } from 'src/http-exception.filter';
+import { HttpErrorFilter } from 'src/utils/http-exception.filter';
 
 @Controller('products')
 export class ProductsController {

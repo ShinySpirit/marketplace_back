@@ -5,7 +5,7 @@ export class CategoryEntity {
     @PrimaryGeneratedColumn()
     id: number //ID
 
-    @Column()
+    @Column({ unique: true })
     title: string //Category title
 
     @Column()
