@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { IResponse } from './types/IResponse';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello everybody! It`s our cool app!';
+  getMainPageResponse(): string {
+    return 'Hello! API is running, you may use routes.';
   }
 }
