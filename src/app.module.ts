@@ -47,7 +47,7 @@ import { UserEntity } from './entities/user.entity';
     AuthModule, 
     UserModule,
     // Catch404Module MUST BE THE LAST IN ARRAY, IN OTHER CASE ALL ROUTES WILL BE 404 
-    Catch404Module,
+    // Catch404Module, //Commented until fix conflict with static
   ],
   controllers: [AppController],
   providers: [AppService],
