@@ -58,6 +58,23 @@ export class ProductsService {
         }
     }
 
+    async getOneProductById(productId: number): Promise<IResponse<IProduct>> {
+        try{
+            const data = await this.productRepository.findOne({
+                where: {
+                    id: productId
+                }
+            });
+            return {
+                statusCode: HttpStatus.OK,
+                message: "OK",
+                result: data
+            }
+        } catch(e) {
+            throw new Error(e);
+        }
+    }
+
     async addOnePruduct(product: IProduct): Promise<IResponse<string>> {
         try {
             this.productRepository.save(product);

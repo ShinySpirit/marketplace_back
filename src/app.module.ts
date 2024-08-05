@@ -11,17 +11,22 @@ import { ProductsModule } from './products/products.module';
 import { ProductEntity } from './entities/product.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PromotionalModule } from './promotional/promotional.module';
+import { Catch404Module } from './catch404/catch404.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { UserEntity } from './entities/user.entity';
 
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), './static'),
+    }),
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [
         ConfigModule,
-        ServeStaticModule.forRoot({
-          rootPath: join(process.cwd(), './static'),
-        }),
       ],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
@@ -31,13 +36,18 @@ import { join } from 'path';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [PingEntity, CategoryEntity, ProductEntity],
+        entities: [PingEntity, CategoryEntity, ProductEntity, UserEntity],
         synchronize: true,
       }),
     }),
     HealthcheckModule,
     CategoriesModule,
     ProductsModule,
+    PromotionalModule,
+    AuthModule, 
+    UserModule,
+    // Catch404Module MUST BE THE LAST IN ARRAY, IN OTHER CASE ALL ROUTES WILL BE 404 
+    Catch404Module,
   ],
   controllers: [AppController],
   providers: [AppService],

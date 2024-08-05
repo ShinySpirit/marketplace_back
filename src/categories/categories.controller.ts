@@ -6,7 +6,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
-import { HttpErrorFilter } from 'src/http-exception.filter';
+import { HttpErrorFilter } from 'src/utils/http-exception.filter';
 
 @Controller('categories')
 export class CategoriesController {

@@ -5,7 +5,7 @@ import { IProduct } from 'src/types/IProduct';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
-import { HttpErrorFilter } from 'src/http-exception.filter';
+import { HttpErrorFilter } from 'src/utils/http-exception.filter';
 
 @Controller('products')
 export class ProductsController {
@@ -14,16 +14,28 @@ export class ProductsController {
  
 
   //Get all products by category ID
-  @Get('/:id')
+  @Get('category/:id')
   @UseFilters(new HttpErrorFilter())
   async getProductsByCategoryId(@Param('id') id: number): Promise<IResponse<IProduct[]>> {
     return this.productsService.getProductsByCategoryId(id);
   }
 
+  //Get all products
   @Get()
   @UseFilters(new HttpErrorFilter())
   async getAllProducts(): Promise<IResponse<IProduct[]>> {
     return this.productsService.getAllProducts();
+  }
+
+  //Get one product by ID
+  @Get("/:id")
+  @UseFilters(new HttpErrorFilter())
+  async getOneProductById(@Param('id') id: number): Promise<IResponse<IProduct>> {
+    const data = await this.productsService.getOneProductById(id);
+    if(data.result == null) {
+      throw new HttpException("Product not found", HttpStatus.NOT_FOUND);
+    }
+    return this.productsService.getOneProductById(id);
   }
 
   // Add one product Post route
